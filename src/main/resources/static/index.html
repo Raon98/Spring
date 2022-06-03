@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js"></script>
+    <script>
+
+
+        const privateKey =  '0123456789abcdef';
+
+        function aes128Encode(privateKey, Iv, data){
+
+
+
+            // console.log("");
+            // console.log("[aes128Encode] : [start]");
+            // console.log("[secretKey] : " + secretKey);
+            // console.log("[Iv] : " + Iv);
+            // console.log("[data] : " + data);
+            // console.log("");
+
+            // [aes 인코딩 수행 실시 : cbc 모드]
+            const cipher = CryptoJS.AES.encrypt(data, CryptoJS.enc.Utf8.parse(privateKey), {
+                iv: CryptoJS.enc.Utf8.parse(Iv), // [Enter IV (Optional) 지정 방식]
+                padding: CryptoJS.pad.Pkcs7,
+                mode: CryptoJS.mode.CBC // [cbc 모드 선택]
+            });
+
+            // [인코딩 된 데이터 확인 실시]
+             const aes128EncodeData = cipher.toString();
+            // console.log("");
+            // console.log("[aes128Encode] : [encode]");
+            // console.log("[data] : " + aes128EncodeData);
+            // console.log("");
+
+
+            return  aes128EncodeData;
+        };
+
+        function encode() {
+            // const privateKey =  '0123456789abcdef';
+            let aes128Iv = "0123456789abcdef";
+            // console.log("클릭하셨습니다.")
+
+            const nums = "2965"
+            const names = "김성철"
+
+            var en_name  =  aes128Encode(privateKey, aes128Iv, names);
+            var en_num  =  aes128Encode(privateKey, aes128Iv, nums);;
+
+            //var JSONDATA = {"name": en_name};
+            //var UserInfo_Object = {names : en_name, ages :en_num};
+
+            var info_data = {name : String(en_name), age : String(en_num)};
+            var info_stfy = JSON.stringify(info_data);
+            var info_parse = JSON.parse(info_stfy);
+
+            console.log("info_data :" + JSON.stringify(info_data))
+            console.log("info_stfy :" + JSON.stringify(info_stfy))
+            console.log("info_parse :" + JSON.stringify(info_parse))
+            console.log("name_parseEx :" + info_parse.name)
+
+        }
+
+
+        function aes128decode(privateKey, Iv, data) {
+            // const privateKey =  '0123456789abcdef';
+
+            const cipher = CryptoJS.AES.decrypt(data, CryptoJS.enc.Utf8.parse(privateKey), {
+                iv: CryptoJS.enc.Utf8.parse(Iv), // [Enter IV (Optional) 지정 방식]
+                padding: CryptoJS.pad.Pkcs7,
+                mode: CryptoJS.mode.CBC // [cbc 모드 선택]
+            });
+             const aes128DecodeData = cipher.toString(CryptoJS.enc.Utf8);
+
+            console.log("");
+            console.log("[aes128Decode] : [decode]");
+            console.log("[data] : " + aes128DecodeData);
+            console.log("");
+
+            return aes128DecodeData
+
+        }
+
+        function decode() {
+            // const privateKey =  '0123456789abcdef';
+            let aes128Iv = "0123456789abcdef";
+            let info_arr = '';
+            const de_info_name = aes128decode(privateKey, aes128Iv, "+QpAJuK/CAzgjgEOIbLrxg==");
+            const de_info_age = aes128decode(privateKey, aes128Iv, "u6NvB1Oc8i05vNcNbLvrZw==");
+
+            console.log("de_info_name :" + de_info_name )
+            console.log("de_info_age :" + de_info_age )
+
+            info_arr = {de_info_name , de_info_age}
+
+            console.log( "info_arr" + JSON.stringify(info_arr))
+        }
+
+    </script>
+</head>
+<body>
+<div class="form_box">
+        <button onclick="encode();">암호화</button>
+    <button onclick="decode();">복호화</button>
+</div>
+</body>
+</html>
